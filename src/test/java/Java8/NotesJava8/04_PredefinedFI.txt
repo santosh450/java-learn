@@ -1,0 +1,223 @@
+Function:
+---------
+
+SAM: apply
+Default Methods: andThen, compose
+Static: identify
+
+compose -  Reverse of andThen
+identity - where function is require but no changes should be applied
+
+
+package Java8._04PredifinedFI;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Function01 {
+    public static void main(String[] args) {
+
+        Function<Integer, Integer> half = i->i/2;
+        System.out.println(half.apply(10));
+
+        Function<Integer, Integer> addBy3 = i->i+3;
+        System.out.println(addBy3.apply(10));
+
+        Function<String, String> upper = String::toUpperCase;
+        System.out.println(upper.apply("Hello"));
+
+        // default methods
+        System.out.println("And Then: "+half.andThen(addBy3).apply(10));
+        System.out.println("Compose: "+half.compose(addBy3).apply(10));
+
+        //Static Method
+        Function<Integer, Integer> identical = Function.identity();
+        System.out.println("identity: "+identical.apply(10));
+
+        //Error: input and Output should be same datatypes
+        /*
+        Function<Integer, double> identical2 = Function.identity();
+        System.out.println("identity: "+identical.apply(10));
+         */
+
+        //Eg-2
+        Stream<String> names = Stream.of("One", "Two", "three");
+        List<String> vals = names.map(Function.identity()).collect(Collectors.toList());
+        System.out.println("identity: "+vals);
+
+    }
+}
+
+O/P:
+5
+13
+HELLO
+And Then: 8
+Compose: 6
+identity: 10
+identity: [One, Two, three]
+---------------------------------------------------------------------------------------------------
+Predicate
+=========
+SAM: test
+default: and, negate, or
+static: isEqual
+
+
+package Java8._04PredifinedFI;
+
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+class Employee {
+    String name;
+    int salary;
+
+    public Employee(String name, int salary) {
+        this.name = name;
+        this.salary = salary;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getSalary() {
+        return salary;
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        Employee e = (Employee) obj;
+        return this.getSalary()==e.getSalary();
+    }
+}
+public class Predicate01 {
+    public static void main(String[] args) {
+
+        Predicate<Integer> legalAge = age -> age>21;
+        System.out.println("Legal Age: "+legalAge.test(25));
+
+        Predicate<Employee> salaryCheck = emp -> emp.getSalary()>25000;
+        Predicate<Employee> nameCheck = emp -> emp.getName().startsWith("S");
+
+        Employee emp1 = new Employee("Shiva", 26000);
+        System.out.println("Salary: "+salaryCheck.test(emp1));
+        System.out.println("Name: "+nameCheck.test(emp1));
+        Employee emp2 = new Employee("Ram", 24000);
+        System.out.println("Salary: "+salaryCheck.test(emp2));
+        System.out.println("Name: "+nameCheck.test(emp2));
+
+        //Default
+        System.out.println("And: "+salaryCheck.and(nameCheck).test(emp1));
+        System.out.println("Or: "+salaryCheck.or(nameCheck).test(emp2));
+        System.out.println("Negate: "+salaryCheck.or(nameCheck).negate().test(emp2));
+
+        //Static
+        Predicate<Employee> baseEmp = Predicate.isEqual(emp1);
+        Employee emp3 = new Employee("Rahim", 26000);
+        System.out.println("Is Equal: "+baseEmp.test(emp3));
+
+    }
+}
+
+O/P:
+Legal Age: true
+Salary: true
+Name: true
+Salary: false
+Name: false
+And: true
+Or: false
+Negate: true
+Is Equal: true
+---------------------------------------------------------------------------------------------------
+Consumer:
+=========
+SAM: accept
+default: andThen
+
+
+package Java8._04PredifinedFI;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Consumer01 {
+    public static void main(String[] args) {
+
+        Consumer<String> inUpper = x -> System.out.println(x.toUpperCase());
+        inUpper.accept("Hello World");
+
+        List<String> names = List.of("abc", "bcd", "efg");
+        names.forEach(inUpper);
+
+        List<String> newVals = new ArrayList<>();
+        Consumer<String> addToList = newVals::add;
+        names.forEach(addToList);
+        System.out.println("New List: "+newVals);
+
+        //default
+        System.out.println("As Consumer not return anything...2 predicates work independently here");
+        names.forEach(inUpper.andThen(addToList));
+        System.out.println("New List2: "+newVals);
+    }
+}
+O/P:
+HELLO WORLD
+ABC
+BCD
+EFG
+New List: [abc, bcd, efg]
+As Consumer not return anything...2 predicates work independently here
+ABC
+BCD
+EFG
+New List2: [abc, bcd, efg, abc, bcd, efg]
+-----------------------------------------------------------------------------------------------
+Supplier:
+=========
+SAM: get
+
+
+package Java8._04PredifinedFI;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+
+public class Supplier01 {
+    public static void main(String[] args) {
+
+        Supplier<LocalDateTime> time = LocalDateTime::now;
+        System.out.println(time.get());
+
+        //passing FI as method argument
+        printTime(time);
+    }
+
+    public static void printTime(Supplier<LocalDateTime> now){
+        System.out.println("passing FI as method argument: \n"+now.get());
+    }
+}
+
+O/P:
+2024-12-29T23:29:37.531542700
+passing FI as method argument: 
+2024-12-29T23:29:37.532493900
+
+
+
+
+
+

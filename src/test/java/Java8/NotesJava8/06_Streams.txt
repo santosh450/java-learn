@@ -1,0 +1,657 @@
+https://youtu.be/kEEoKqdVc_4?t=22606
+-------------------------------------
+
+Streams:
+=========
+
+> Stream is not a data Structure , it will take data Structure as an input to perform operations. 
+> Stream will not disturb actual data source Object. 
+> Operations of Stream will not impact the data source. 
+> Stream object used only once (IllegalStateException: stream has already been operated upon or closed)
+
+
+Stream Intialization
+--------------------
+
+package Java8._06Streams;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+public class Test01 {
+
+
+    public static void main(String[] args) {
+
+        //01. From Collection objects
+        List<String> list1 = List.of("One", "Two");
+        Stream<String> stream = list1.stream();
+
+        //02. Array of values
+        String[] str1 = {"One", "Two"};
+        Stream<String> stream2 = Arrays.stream(str1);
+
+        //03. Stream Methods
+        Stream<String> Stream3 = Stream.of("One", "Two");
+
+        //04. generate()
+        Stream<String> Stream4 = Stream.generate(() -> "One");
+
+        //05. builder()
+        //Builder design pattern
+        Stream.Builder<Object> builder = Stream.builder();
+        Stream<Object> build = builder.add("One").add("Two").add("Three").build();
+
+        //06. Empty Stream
+        // empty()
+
+        Stream<Object> empty = Stream.empty();
+
+
+    }
+}
+
+----------------------------------------------------------------------------------------------
+
+Stream Operations
+
+1. Intermidiate 
+2. Terminal
+
+Stream Pipeline:
+
+
+Intermediate Operations: 
+--------------------------
+> When we call a method belongs to Intermediate Operations, it will always returns another Stream Object Of the operations results 
+> We can call many intermediate Operations on same stream instance as chain Of methods 
+> This is called as pipelined on same Stream source. 
+> Intermediate Operationg are executed only once when we invoke terminal operation.
+ 
+Terminal Operations:
+-----------------------
+> we can call only one terminal method on any stream instance 
+> when we call terminal method , immediately we will get the result of all pipelined operations on the Stream Object. 
+
+
+
+Stream Pipeline :    Input -> Stream -> Intermediate Op1 -> Stream -> Intermediate Op2 ->....-> Stream -> Terminal Op -> Output
+
+
+
+Initialization:
+---------------
+empty() 			- Returns an empty sequential Stream.
+of(T... values) 		- Returns a sequential ordered stream whose elements are the specified values. 
+
+Intermediate:
+------------- 
+distinct() 					- Returns a stream consisting Of the distinct elements (according to Object.equals(object)) Of this stream. 
+
+filter(Predicate<? super predicate)  		- Returns a stream consisting Of the elements Of this stream that match the given predicate. 
+
+limit(long maxSize) - Returns a stream consisting Of the elements of this stream, truncated to be no longer than maxSize in length. 
+
+skip(long n) - Returns a stream consisting of the remaining elements of this stream after discarding the first n elements of the stream. 
+
+map(Function<? super T? extends R> mapper) 	- Returns a stream consisting of the results of applying the given function to the elements of this stream. 
+
+MapToDouble(ToDoubleFunction<? super T>mapper) 	- Returns a DoubleStream consisting Of the results Of applying the given function to the elements Of this stream. 
+
+MapToInt(ToIntFunction<? super T>mapper) 	- Returns a IntStream consisting of the results of applying the given function to the elements of this stream. 
+
+MapToLong(ToLongFunction<? super T>mapper) 	- Returns a LongStream consisting Of the results Of applying the given function to the elements Of this stream. 
+
+flatMap(Function<? supet T? extends Stream<? extends R>> mapper)
+						- Returns a stream consisting Of the results Of replacing each element Of this stream with the contents of a mapped stream produced by applying the provided mapping function to each element. 
+A stream can hold complex data structures like Stream<List<String>>. In cases like this, flatMap() helps us to flatten the data structure to simplify further operations: 
+
+sorted()  					- Returns a stream consisting of the elements of this stream, sorted according to natural order. 
+
+sorted(Comparator<? supet T> comparator) 	- Returns a stream consisting of the elements of this stream, sorted according to the provided Comparator. 
+
+peek(Consumer<? super T> action)  		- Returns a stream consisting of the elements of this stream, additionally performing the provided 
+action on each element as elements are consumed from the resulting stream. We saw foreach() earlier in this section, which is a terminal operation. However, sometimes we need to perform multiple operations on each element of the stream before any terminal operation is applied. 
+
+
+Terminal 
+---------
+
+allMatch(Predicate<? super> predicate) 	- Returns whether all elements Of this stream match the provided predicate. 
+
+anyMatch(Predicate<? super> predicate) 	- Returns whether any elements of this stream match the provided predicate. 
+
+noneMatch(Predicate<? super> predicate) - Returns whether no elements of this stream match the provided predicate. 
+
+max(Comparator<? super> comparator) 	- Returns the maximum element Of this stream according to the provided Comparator. 
+
+min(Comparator<? super> comparator) 	- Returns the minimum element of this stream according to the provided Comparator. 
+
+findAny() 				- Returns an Optional describing some element of the stream, or an empty Optional if the stream is 
+
+findFirst()  					- Returns an optignal describing the first element Of this stream, or an empty Optional if the stream is 
+
+count() 					- Returns the count of elements in this stream. 
+
+forEach(Cosumer<? super T>action)  		- Performs an action for each element of this stream. 
+
+collect()  					- The collect method is used to return the re-Fult of the intermediate operations performed on the stream. collect() performs mutable fold operations (repackaging elements to some data structures 
+and applying some additional logic, concatenating them, etc.) on data elements held in 
+the Stream instance. It accepts an argument of the type Collector, which specifies the mechanism of 
+reduction. There are already created, predefined collectors for most common Op ations. They can 
+be accessed with the help of the collectors type. 
+
+toList ( )  					- Collects values as List
+
+
+=======================================================================
+
+package Java8._06Streams;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Test02 {
+
+    public static List<Employee> employeeList(){
+        List<Employee> list = new ArrayList<>();
+        list.add(new Employee(107,"Ram", "Hyd", 38, 'M', "Finance", 2019, 31700));
+        list.add(new Employee(100,"Sai", "Che", 39, 'M', "Security", 2017, 38000));
+        list.add(new Employee(45,"Rakesh", "Ban", 26, 'F', "Finance", 2000, 40000));
+        list.add(new Employee(206,"Suresh", "Hyd", 32, 'M', "Sales", 2022, 22000));
+        list.add(new Employee(18,"Abhi", "Mum", 45, 'M', "HR", 1996, 42000));
+        return list;
+    }
+
+    public static void main(String[] args) {
+
+        
+        Stream<Employee> stream = employeeList().stream();
+
+        //1. get all employees names
+        //Stream Pipeline:
+        //List<String> names = stream.map(emp -> emp.getName()).collect(Collectors.toList());
+        List<String> names = stream.
+                map(Employee::getName).
+                collect(Collectors.toList());
+        //Java 17: collect(Collectors.toList()) replaced with toList()
+        System.out.println("1. Names: "+names);
+
+        //2. Employee names age>30
+        // IllegalStateException: stream has already been operated upon or closed
+        /*
+        List<String> names30 = stream.filter(emp -> emp.getAge() > 30).map(Employee::getName).collect(Collectors.toList());
+        System.out.println("Age>30: "+names30);
+         */
+        List<String> names30 = employeeList().stream()
+                .filter(emp -> emp.getAge() > 30)
+                .map(Employee::getName)
+                .collect(Collectors.toList());
+        System.out.println("2. Age>30: "+names30);
+
+        //3. Print city names
+        //Distinct/Unique
+        employeeList().stream().map(Employee::getCity).distinct().forEach(System.out::print);
+        //Duplicates
+        System.out.println("\n3. ");
+        employeeList().stream().map(Employee::getCity).forEach(e->System.out.print(e+" "));
+
+        //4. No of employess salary>30K
+        long count = employeeList().stream()
+                .filter(e -> e.getSalary() > 30000)
+                .count();
+        System.out.println("\n4. Salary> 30K: "+count);
+
+        //5. Get first 3 empoyees
+        List<Employee> first3Emps = employeeList().stream()
+                .limit(3)
+                .collect(Collectors.toList());
+        System.out.println("5. First 3 emps: "+first3Emps);
+
+    }
+}
+O/P:
+1. Names: [Ram, Sai, Rakesh, Suresh, Abhi]
+2. Age>30: [Ram, Sai, Suresh, Abhi]
+HydCheBanMum
+3. 
+Hyd Che Ban Hyd Mum 
+4. Salary> 30K: 4
+5. First 3 emps: [Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}, Employee{id=100, name='Sai', city='Che', age=39, gender=M, department='Security', joiningYear=2017, salary=38000.0}, Employee{id=45, name='Rakesh', city='Ban', age=26, gender=F, department='Finance', joiningYear=2000, salary=40000.0}]
+
+
+----------------------------------------------------------------------------------------------
+
+package Java8._06Streams;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Test03 {
+
+    public static List<Employee> employeeList(){
+        List<Employee> list = new ArrayList<>();
+        list.add(new Employee(107,"Ram", "Hyd", 38, 'M', "Finance", 2019, 31700));
+        list.add(new Employee(100,"Sai", "Che", 39, 'M', "Security", 2017, 38000));
+        list.add(new Employee(45,"Rakesh", "Ban", 26, 'F', "Finance", 2000, 40000));
+        list.add(new Employee(206,"Suresh", "Hyd", 32, 'M', "Sales", 2022, 22000));
+        list.add(new Employee(18,"Abhi", "Mum", 45, 'M', "HR", 1996, 42000));
+        return list;
+    }
+
+    public static void main(String[] args) {
+
+        //6. Skip first 3
+        List<Employee> skip3Emps = employeeList().stream()
+                .skip(3)
+                .collect(Collectors.toList());
+        System.out.println("6. Skip 3 emps: "+skip3Emps);
+
+        //7. verify any emp < 18
+        boolean isUnder18 = employeeList().stream()
+                .anyMatch(e -> e.getAge() < 18);
+        //7. verify any emp < 30
+        boolean isUnder30 = employeeList().stream()
+                .anyMatch(e -> e.getAge() < 30);
+        System.out.println("7. Any under 18 emp ?: "+isUnder18);
+        System.out.println("7. Any under 30 emp ?: "+isUnder30);
+
+        //8. Check every emp joined after 1995 or not
+        boolean isAllJoinedAfter1995 = employeeList().stream()
+                .allMatch(e -> e.getYearJoining() > 1995);
+        //8. Check every emp joined after 2000 or not
+        boolean isAllJoinedAfter2000 = employeeList().stream()
+                .allMatch(e -> e.getYearJoining() > 2000);
+        System.out.println("8. All are joined after 1995 ?: "+isAllJoinedAfter1995);
+        System.out.println("8. All are joined after 2000 ?: "+isAllJoinedAfter2000);
+
+        //9. None are joined before 1995
+        boolean isNoneJoinedBefore1995 = employeeList().stream()
+                .noneMatch(e -> e.getYearJoining() < 1995);
+        //9. None are joined before 2000
+        boolean isNoneJoinedBefore2000 = employeeList().stream()
+                .allMatch(e -> e.getYearJoining() < 2000);
+        System.out.println("9. None are joined before 1995 ?: "+isNoneJoinedBefore1995);
+        System.out.println("9. None are joined before 2000 ?: "+isNoneJoinedBefore2000);
+
+        //10. findAny() -> get one value from out of all values
+        Optional<Employee> any = employeeList().stream()
+                .findAny();
+        Employee employee = any.get();
+        System.out.println("10. Find Any: "+employee);
+
+    }
+}
+O/P:
+6. Skip 3 emps: [Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}, Employee{id=18, name='Abhi', city='Mum', age=45, gender=M, department='HR', joiningYear=1996, salary=42000.0}]
+7. Any under 18 emp ?: false
+7. Any under 30 emp ?: true
+8. All are joined after 1995 ?: true
+8. All are joined after 2000 ?: false
+9. None are joined before 1995 ?: true
+9. None are joined before 2000 ?: false
+10. Find Any: Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}
+
+-----------------------------------------------------------------------------------
+
+package Java8._06Streams;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+public class Test04 {
+
+    public static List<Employee> employeeList(){
+        List<Employee> list = new ArrayList<>();
+        list.add(new Employee(107,"Ram", "Hyd", 38, 'M', "Finance", 2019, 31700));
+        list.add(new Employee(100,"Sai", "Che", 39, 'M', "Security", 2017, 38000));
+        list.add(new Employee(45,"Rakesh", "Ban", 26, 'F', "Finance", 2000, 40000));
+        list.add(new Employee(206,"Suresh", "Hyd", 32, 'M', "Sales", 2022, 22000));
+        list.add(new Employee(18,"Abhi", "Mum", 45, 'M', "HR", 1996, 42000));
+        return list;
+    }
+
+    public static void main(String[] args) {
+
+        //10. findAny() -> get one value from out of all values
+        Optional<Employee> any = employeeList().stream()
+                .findAny();
+        Employee employee = any.get();
+        System.out.println("10. Find Any: "+employee);
+
+        //11. findFirst() -> return first value
+        Optional<Employee> first = employeeList().stream()
+                .findFirst();
+        Employee firstEmployee = any.get();
+        System.out.println("11. Find first: "+firstEmployee);
+
+        //12. sorted
+        List<Integer> collect = employeeList().stream()
+                .map(Employee::getId)
+                .sorted().
+                collect(Collectors.toList());
+        System.out.println("12. Sort EmpId: "+collect);
+        //12. sorted - Comparator
+        List<Employee> collect1 = employeeList().stream()
+                .sorted((e1, e2) -> e1.getId() - e2.getId()).
+                collect(Collectors.toList());
+        System.out.println("12. Sort EmpId with comparator: "+collect1);
+        //12. sorted - Comparator
+        employeeList().stream()
+                .sorted((e1, e2) -> e1.getId() - e2.getId()).
+                forEach(e->System.out.print("12. Sort: "+e.getId()+"-"+e.getSalary()+" "));
+
+        //13.Minimum Salary
+        Employee minSalary = employeeList().stream()
+                .min((e1, e2) -> (int) (e1.getSalary() - e2.getSalary()))
+                .get();
+        System.out.println("\n13. Minimum Salary: "+minSalary);
+
+        //14.Maximum Salary
+        Employee maxSalary = employeeList().stream()
+                .max((e1, e2) -> (int) (e1.getSalary() - e2.getSalary()))
+                .get();
+        System.out.println("14. Maximum Salary: "+maxSalary);
+
+        //15. Average Salary
+        OptionalDouble average = employeeList().stream()
+                .mapToDouble(Employee::getSalary)       //MapToDouble is required as getSalary is double; average() should work on Double
+                .average();
+        double v = average.isPresent() ? average.getAsDouble() : 0.00;
+        System.out.println("15. Average Salary: "+v);
+
+        //15. Average Age
+        double asDouble = employeeList().stream()
+                .mapToInt(Employee::getAge)       //mapToInt is required as getAge is int; average() should work on Double
+                .average().getAsDouble();
+        System.out.println("15. Average Age: "+asDouble);
+
+
+        //peek()
+        System.out.println("----peak()---------");
+        List<Employee> empAfter2015 = employeeList().stream()
+                .peek(emp-> System.out.println("Before filter: "+emp))
+                .filter(emp -> emp.getYearJoining() > 2015)
+                .peek(emp-> System.out.println("After filter: "+emp))
+                .collect(Collectors.toList());
+        System.out.println("16. peak result: "+empAfter2015);
+
+        //peek()
+        List<String> peekEg = Stream.of("one", "two", "three", "four")
+                .filter(e -> e.length() > 3)
+                .peek(e -> System.out.println("Filtered value: " + e))
+                .map(String::toUpperCase)
+                .peek(e -> System.out.println("Mapped value: " + e))
+                .collect(Collectors.toList());
+        System.out.println("16. peek Eg: "+peekEg);
+    }
+}
+
+O/P:
+10. Find Any: Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}
+11. Find first: Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}
+12. Sort EmpId: [18, 45, 100, 107, 206]
+12. Sort EmpId with comparator: [Employee{id=18, name='Abhi', city='Mum', age=45, gender=M, department='HR', joiningYear=1996, salary=42000.0}, Employee{id=45, name='Rakesh', city='Ban', age=26, gender=F, department='Finance', joiningYear=2000, salary=40000.0}, Employee{id=100, name='Sai', city='Che', age=39, gender=M, department='Security', joiningYear=2017, salary=38000.0}, Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}, Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}]
+12. Sort: 18-42000.0 12. Sort: 45-40000.0 12. Sort: 100-38000.0 12. Sort: 107-31700.0 12. Sort: 206-22000.0 
+13. Minimum Salary: Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}
+14. Maximum Salary: Employee{id=18, name='Abhi', city='Mum', age=45, gender=M, department='HR', joiningYear=1996, salary=42000.0}
+15. Average Salary: 34740.0
+15. Average Age: 36.0
+----peak()---------
+Before filter: Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}
+After filter: Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}
+Before filter: Employee{id=100, name='Sai', city='Che', age=39, gender=M, department='Security', joiningYear=2017, salary=38000.0}
+After filter: Employee{id=100, name='Sai', city='Che', age=39, gender=M, department='Security', joiningYear=2017, salary=38000.0}
+Before filter: Employee{id=45, name='Rakesh', city='Ban', age=26, gender=F, department='Finance', joiningYear=2000, salary=40000.0}
+Before filter: Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}
+After filter: Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}
+Before filter: Employee{id=18, name='Abhi', city='Mum', age=45, gender=M, department='HR', joiningYear=1996, salary=42000.0}
+16. peak result: [Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}, Employee{id=100, name='Sai', city='Che', age=39, gender=M, department='Security', joiningYear=2017, salary=38000.0}, Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}]
+Filtered value: three
+Mapped value: THREE
+Filtered value: four
+Mapped value: FOUR
+16. peek Eg: [THREE, FOUR]
+
+---------------------------------------------------------------------------------------------------------------
+
+stream() -> process sequentially
+parallelStream -> process parallel, may not gaurantee of order of processing
+
+Collect()
+Collectors: JDK 8
+
+averagingDouble(ToDoubleFunction)
+averagingInt(ToIntFunction)
+averagingLong(ToLongFunction)
+counting()
+groupingBy(Function)
+joining()
+joining(CharSequence)
+joining(CharSequence delimiter, CharSequence prefix, CharSequence suffix)
+maxBy(Comparator)
+minBy(Comparator)
+summingDouble(ToDoubleFunction)
+summingInt(ToIntFunction)
+summingLong(ToLongFunction)
+toCollect(Supplier)
+toList()
+toMap(Function)
+toSet()
+
+---------------
+goupingBy - returns Map
+
+----------------------------------------------------
+
+package Java8._06Streams;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+public class Test05 {
+
+    public static List<Employee> employeeList(){
+        List<Employee> list = new ArrayList<>();
+        list.add(new Employee(107,"Ram", "Hyd", 38, 'M', "Finance", 2019, 31700));
+        list.add(new Employee(100,"Sai", "Che", 39, 'M', "Security", 2017, 38000));
+        list.add(new Employee(45,"Radha", "Ban", 26, 'F', "Finance", 2000, 40000));
+        list.add(new Employee(206,"Suresh", "Hyd", 32, 'M', "Sales", 2022, 22000));
+        list.add(new Employee(18,"Abhi", "Mum", 45, 'M', "HR", 1996, 42000));
+        return list;
+    }
+
+    public static void main(String[] args) {
+
+        List<Employee> employeeList = employeeList();
+
+        //17. Parallel Stream
+        System.out.println("----------Sequential----------");
+        employeeList().stream()
+                .forEach(System.out::println);
+
+        System.out.println("17. ----------paralel----------");
+        employeeList().parallelStream()
+                .forEach(System.out::println);
+
+        //18. get all names of employees who's age is greater than 25
+        List<String> emp25 = employeeList().stream()
+                .filter(emp -> emp.getAge() > 25)
+                .map(Employee::getName)
+                .collect(Collectors.toList());
+        System.out.println("18. Employess Names age>25: "+emp25);
+
+        //19. Unique Department names
+        Set<String> department = employeeList().stream()
+                .map(Employee::getDepartment).
+                collect(Collectors.toSet());
+        System.out.println("19. Unique departments: "+department);
+
+        //20. Collect empIds and their salaries
+        Map<Integer, Double> idSalary = employeeList().stream()
+                .collect(Collectors.toMap(Employee::getId, Employee::getSalary));
+        System.out.println("20. toMap: "+idSalary);
+
+        //20. toMap - BiOperator:  can be used when you want to handle conflicts in key values
+        employeeList.add(new Employee(107,"Ram", "Hyd", 38, 'M', "Finance", 2025,45700));
+        Map<Integer, Double> idSalaryBinary = employeeList.stream()
+                .collect(Collectors
+                        .toMap(Employee::getId,
+                                Employee::getSalary,
+                                (valSalary1, valSalary2) -> valSalary1 + valSalary2));
+        System.out.println("20. toMap-BiOperator: "+idSalaryBinary);
+
+        //20. toMap - Supplier - allows to choose the implementation of the Map (for example, HashMap, TreeMap, or LinkedHashMap).
+        // TreeMap - to get sorted order
+        TreeMap<String, Double> treeMap = employeeList.stream()
+                .collect(Collectors.toMap(
+                        Employee::getDepartment,
+                        Employee::getSalary,
+                        (salary1, salary2) -> salary1, //keep salary of 1st available department
+                        () -> new TreeMap<>()));
+        System.out.println("20. toMap-Supplier-TreeMap: "+treeMap);
+
+        //20. toMap - Supplier - allows to choose the implementation of the Map (for example, HashMap, TreeMap, or LinkedHashMap).
+        // 20. LinkedHashMap - to maintain insertion order
+        LinkedHashMap<String, Double> linkedHashMap = employeeList.stream()
+                .collect(Collectors.toMap(
+                        Employee::getDepartment,
+                        Employee::getSalary,
+                        Double::sum, // add value1+value2
+                        LinkedHashMap::new));
+        System.out.println("20. toMap-Supplier-LinkedHashMap: "+linkedHashMap);
+
+        //21. grouping()
+        // average salary of each department
+        Map<String, Double> avgSalaryDeptWise = employeeList().stream()
+                .collect(Collectors.
+                        groupingBy(Employee::getDepartment,
+                                Collectors.averagingDouble(Employee::getSalary)));
+        System.out.println("21. grouping: "+avgSalaryDeptWise);
+
+        //21. Same as (20. toMap-BiOperator)
+        Map<Integer, Double> idSalaryGrouping = employeeList.stream()
+                .collect(Collectors
+                        .groupingBy(Employee::getId,
+                                Collectors.summingDouble(Employee::getSalary)
+                        ));
+        System.out.println("21. grouping: "+idSalaryGrouping);
+
+    }
+}
+
+O/P:
+----------Sequential----------
+Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}
+Employee{id=100, name='Sai', city='Che', age=39, gender=M, department='Security', joiningYear=2017, salary=38000.0}
+Employee{id=45, name='Radha', city='Ban', age=26, gender=F, department='Finance', joiningYear=2000, salary=40000.0}
+Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}
+Employee{id=18, name='Abhi', city='Mum', age=45, gender=M, department='HR', joiningYear=1996, salary=42000.0}
+17. ----------paralel----------
+Employee{id=45, name='Radha', city='Ban', age=26, gender=F, department='Finance', joiningYear=2000, salary=40000.0}
+Employee{id=18, name='Abhi', city='Mum', age=45, gender=M, department='HR', joiningYear=1996, salary=42000.0}
+Employee{id=206, name='Suresh', city='Hyd', age=32, gender=M, department='Sales', joiningYear=2022, salary=22000.0}
+Employee{id=100, name='Sai', city='Che', age=39, gender=M, department='Security', joiningYear=2017, salary=38000.0}
+Employee{id=107, name='Ram', city='Hyd', age=38, gender=M, department='Finance', joiningYear=2019, salary=31700.0}
+18. Employess Names age>25: [Ram, Sai, Radha, Suresh, Abhi]
+19. Unique departments: [Sales, Finance, HR, Security]
+20. toMap: {18=42000.0, 100=38000.0, 107=31700.0, 45=40000.0, 206=22000.0}
+20. toMap-BiOperator: {18=42000.0, 100=38000.0, 107=77400.0, 45=40000.0, 206=22000.0}
+20. toMap-Supplier-TreeMap: {Finance=31700.0, HR=42000.0, Sales=22000.0, Security=38000.0}
+20. toMap-Supplier-LinkedHashMap: {Finance=117400.0, Security=38000.0, Sales=22000.0, HR=42000.0}
+21. grouping: {Sales=22000.0, Finance=35850.0, HR=42000.0, Security=38000.0}
+21. grouping: {18=42000.0, 100=38000.0, 107=77400.0, 45=40000.0, 206=22000.0}
+
+
+------------------------------------------------------------------------------------------------------------------
+
+package Java8._06Streams;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+public class Test06 {
+
+    public static List<Employee> employeeList(){
+        List<Employee> list = new ArrayList<>();
+        list.add(new Employee(107,"Ram", "Hyd", 38, 'M', "Finance", 2019, 31700));
+        list.add(new Employee(100,"Sai", "Che", 39, 'M', "Security", 2017, 38000));
+        list.add(new Employee(45,"Radha", "Ban", 26, 'F', "Finance", 2000, 40000));
+        list.add(new Employee(206,"Suresh", "Hyd", 32, 'M', "Sales", 2022, 22000));
+        list.add(new Employee(18,"Abhi", "Mum", 45, 'M', "HR", 1996, 42000));
+        return list;
+    }
+
+    public static void main(String[] args) {
+
+        List<Employee> employeeList = employeeList();
+        employeeList.add(new Employee(107,"Ram", "Hyd", 38, 'M', "Finance", 2025,45700));
+        //count()
+        //22. get employee count by gender wise
+        Map<Character, Long> genderCount = employeeList.stream()
+                .collect(Collectors.groupingBy(Employee::getGender,
+                        Collectors.counting()));
+        System.out.println("22. count: "+genderCount);
+
+        //summarizing
+        System.out.println("23. Sum :"+
+                employeeList.stream()
+                .collect(Collectors.summingDouble(Employee::getSalary)));
+
+        System.out.println("23. Summarizing :" +
+                employeeList.stream()
+                .collect(Collectors.summarizingDouble(Employee::getSalary)));
+
+        DoubleSummaryStatistics stats = employeeList.stream()
+                .collect(Collectors.summarizingDouble(Employee::getSalary));
+        System.out.println("23 Stats: count: "+stats.getCount()+" min: "+stats.getMin());
+
+        //maxBy or max
+        Employee maxAge = employeeList.stream()
+                .max((e1, e2) -> e1.getAge() - e2.getAge())
+                .get();
+        System.out.println("24. Max age Employee: "+maxAge);
+
+        //minBy or min
+        Employee minAge = employeeList.stream()
+                .collect(Collectors.minBy((e1, e2) -> e1.getAge() - e2.getAge()))
+                .get();
+        System.out.println("24. Min age Employee: "+minAge);
+
+        //joining()
+        //All departments with delimiter:::
+        String departments = employeeList.stream()
+                .map(Employee::getDepartment)
+                .collect(Collectors.joining(":::"));
+        System.out.println("25: joining: "+departments);
+    }
+}
+
+O/P:
+22. count: {F=1, M=5}
+23. Sum :219400.0
+23. Summarizing :DoubleSummaryStatistics{count=6, sum=219400.000000, min=22000.000000, average=36566.666667, max=45700.000000}
+23 Stats: count: 6 min: 22000.0
+24. Max age Employee: Employee{id=18, name='Abhi', city='Mum', age=45, gender=M, department='HR', joiningYear=1996, salary=42000.0}
+24. Min age Employee: Employee{id=45, name='Radha', city='Ban', age=26, gender=F, department='Finance', joiningYear=2000, salary=40000.0}
+25: joining: Finance:::Security:::Finance:::Sales:::HR:::Finance
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+

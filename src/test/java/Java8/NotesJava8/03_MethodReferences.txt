@@ -1,0 +1,261 @@
+Method References:
+=================
+
+Method references are special type of Lambda Expressions
+
+1. pre defined methods
+
+	ClassName/Instance reference :: methodName
+
+------------------------------------------------------------------
+
+
+package Java8._03MethodReference;
+
+
+interface ConvertUpper {
+    String convert(String text);
+}
+public class Test01 {
+    public static void main(String[] args) {
+
+        //Lambda Expressions
+        ConvertUpper upper = text -> text.toUpperCase();
+        System.out.println(upper.convert("My Name is Santosh"));
+
+        //Method Reference
+        ConvertUpper upper2 = String::toUpperCase;
+        System.out.println(upper2.convert("My Name is Maharana"));
+    }
+}
+
+O/P:
+MY NAME IS SANTOSH
+MY NAME IS MAHARANA
+---------------------------------------------------------------------------
+
+
+
+Lamba Expressions - To implement new functionality
+Method reference - To re use existing functionality (pre defined methods)
+
+1. Reference to Static Methods
+2. Reference to Instance Methods
+3. Reference to Instance Methods of arbitrary object of given type
+4. Reference to Constructors
+
+
+----------------------------------------------------------------------------
+
+Reference to Static Methods
+---------------------------
+- instead of implementing code as lambda expressions, we can use same code as static method at original class level
+- Method which is referred in Class, Interface should have same method signature(arguments,return type)
+
+
+
+//Reference to Static Methods
+
+
+package Java8._03MethodReference;
+
+
+class Employee {
+    int id;
+    String name, address;
+
+    public Employee(int id, String name, String address) {
+        this.id = id;
+        this.name = name;
+        this.address = address;
+    }
+
+    public Employee() {
+    }
+
+    static boolean isValidEmployee(Employee emp){
+        return emp.id!=0 && emp.name!=null;
+    }
+}
+
+@FunctionalInterface
+interface EmployeeFI {
+    boolean isValidEmployeeFI(Employee emp);
+}
+
+public class Test02 {
+    public static void main(String[] args) {
+
+        //Method Reference
+	EmployeeFI valid = Employee::isValidEmployee;
+        System.out.println(valid.isValidEmployeeFI(new Employee()));
+        System.out.println(valid.isValidEmployeeFI(new Employee(10, "Ramesh", "Hyderabad")));
+    }
+}
+
+O/P:
+false
+true
+
+-------------------------------------------------------------------------------------------------
+
+2. Reference to Instance Methods
+----------------------------------
+
+- for referenceCreate a new instance 
+	new Employee():method1
+- if instance method having same return type with no args, we can use clsss name
+	Employee:method
+
+*So class name can be used to instance method if method having same return type and no args
+
+
+//Reference to Instance Methods
+
+
+package Java8._03MethodReference;
+
+
+class Employee2 {
+    int id, salary;
+    String name;
+
+    public Employee2(int id, String name, int salary) {
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+
+    public Employee2() {
+    }
+
+    boolean isValidEmployee(Employee2 emp){
+        return emp.id!=0 && emp.name!=null;
+    }
+
+    boolean validSalary(){
+        return this.salary>0?true:false;
+    }
+}
+
+@FunctionalInterface
+interface Employee2FI {
+    boolean isValidEmployeeFI(Employee2 emp);
+}
+
+public class Test03 {
+    public static void main(String[] args) {
+
+        Employee2 emp = new Employee2();
+        //Access instance method with new Instance
+        Employee2FI valid2 = emp::isValidEmployee;
+        System.out.println("New Instance: "+valid2.isValidEmployeeFI(new Employee2()));
+        System.out.println("New Instance: "+valid2.isValidEmployeeFI(new Employee2(10, "Ramesh", 1000)));
+
+        //Access instance method with class Name
+        Employee2FI validSal = Employee2::validSalary;
+        System.out.println("ClassName: "+validSal.isValidEmployeeFI(new Employee2()));
+        System.out.println("ClassName: "+validSal.isValidEmployeeFI(new Employee2(11, "Suresh", 5000)));
+    }
+}
+
+
+O/P:
+New Instance: false
+New Instance: true
+ClassName: false
+ClassName: true
+
+----------------------------------------------------------------------------------------------------
+
+// 3. Reference to Instance Methods of arbitrary object of given type
+
+
+package Java8._03MethodReference;
+
+
+import java.util.Arrays;
+
+public class Test04 {
+    public static void main(String[] args) {
+
+        //Traditional
+        String[] names = {"Ravi", "Bipin", "Ranga", "Durga"};
+        Arrays.sort(names, (o1, o2)->o1.compareToIgnoreCase(o2));
+        System.out.println(Arrays.toString(names));
+
+        //Method reference
+        String[] city = {"Hyderabad", "Delhi", "Bangalore", "Chennai"};
+        Arrays.sort(city, String::compareToIgnoreCase);
+        System.out.println(Arrays.toString(city));
+        
+    }
+}
+O/P:
+[Bipin, Durga, Ranga, Ravi]
+[Bangalore, Chennai, Delhi, Hyderabad]
+
+------------------------------------------------------------------------------------------------------
+
+https://youtu.be/kEEoKqdVc_4?t=9905
+
+// 4. Reference to constructor
+
+ - logic inside constructor
+ - abstract method Return type should be always the type of which constructor has to be executed
+ - make sure abstract method parameter are part of constructor definition w.r.t order and type
+
+
+//Reference to Instance Methods
+
+
+package Java8._03MethodReference;
+
+
+class Employee4 {
+    int id, salary;
+    String name;
+
+    public Employee4() {
+        System.out.println("Default Constructor");
+    }
+
+    Employee4(int id, String name, int salary) {
+        System.out.println("Implemented Constructor");
+        this.id = id;
+        this.name = name;
+        this.salary = salary;
+    }
+
+}
+
+@FunctionalInterface
+interface Employee4FI {
+    Employee4 setEmployeeData(int id, String name, int salary);
+}
+
+public class Test05 {
+    public static void main(String[] args) {
+
+        Employee4FI empFI4 = Employee4::new;
+        Employee4 emp4 = empFI4.setEmployeeData(10, "Ramu", 10000);
+        System.out.println("Constructor Reference: "+emp4.id);
+
+        Employee4 emp5 = empFI4.setEmployeeData(11, "Rakesh", 20000);
+        System.out.println("Constructor Reference: "+emp5.id);
+    }
+}
+
+O/P:
+Implemented Constructor
+Constructor Reference: 10
+Implemented Constructor
+Constructor Reference: 11
+
+--------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
