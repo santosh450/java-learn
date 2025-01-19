@@ -1,0 +1,224 @@
+Optional:
+=========
+1. objects are came from different applications
+2. May have null values
+3. May face null pointer exception
+
+Optional class called as container as optional may contain value or not but never null ( throw exp or default value)
+
+
+package Java8._05Optional;
+
+import java.util.Optional;
+
+public class Test01 {
+    public static String getName(){
+        return null;
+    }
+
+    public static Optional<String> getText(){
+        return Optional.of("Ramesh");
+    }
+
+
+    public static void main(String[] args) {
+        String name = getName();  //No gaurantee that value is always not null
+
+        if (name!=null)           // should always null check in each cases
+            name.toUpperCase();
+
+        System.out.println(name);
+
+        //Optional approach
+
+        Optional<String> nameContainer = getText();
+        if(nameContainer.isPresent()){
+            System.out.println(nameContainer.get().toUpperCase());
+        }
+    }
+
+
+}
+
+O/P:
+null
+RAMESH
+---------------------------------------------------------------------
+
+package Java8._05Optional;
+
+import java.util.Optional;
+
+public class Test02 {
+
+    public static Optional<String> getText(){
+        String name = null;
+        if(name==null){
+            return Optional.empty();
+        }
+        return Optional.of("Ramesh");
+    }
+
+
+    public static void main(String[] args) {
+
+        Optional<String> nameContainer = getText();
+        if(nameContainer.isPresent()){
+            System.out.println(nameContainer.get().toUpperCase());
+        }
+        else {
+            System.out.println("Value is not available");
+        }
+
+        Optional<String> nameContainer2 = getText();
+        if(nameContainer2.isEmpty()){
+            System.out.println("Yes Empty");
+        }
+        else {
+            System.out.println("Value is not available");
+        }
+    }
+
+
+}
+
+O/P:
+Value is not available
+Yes Empty
+-------------------------------------------------------------------
+package Java8._05Optional;
+
+import java.util.Optional;
+
+class Student {
+    int id;
+    String name;
+
+    public Student(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Student() {
+    }
+}
+
+public class Test03 {
+
+
+    public static Optional<String> getName(Student student){
+        if(student.name==null){
+            return Optional.empty();
+        }
+        return Optional.of(student.name);
+    }
+
+
+    public static void main(String[] args) {
+
+        Optional<String> nameContainer = getName(new Student());
+        if(nameContainer.isPresent()){
+            System.out.println(nameContainer.get());
+        }
+        else {
+            System.out.println("Value is not available");
+        }
+
+
+        Optional<String> nameContainer2 = getName(new Student(100, "Ramesh"));
+        if(nameContainer2.isEmpty()){
+            System.out.println("Yes Empty");
+        }
+        else {
+            System.out.println("nameContainer2: "+nameContainer2.get());
+        }
+        nameContainer2.ifPresent(x-> System.out.println("nameContainer2 - ifPresent: "+x.toUpperCase()));
+        nameContainer2.ifPresentOrElse(
+                x-> System.out.println("nameContainer2 - ifPresentOrElse: "+x.toLowerCase()),
+                () -> System.out.println("nameContainer2 - ifPresentOrElse: ELSE PART")
+        );
+
+        Optional<String> nameContainer3 = getName(new Student());
+        nameContainer3.ifPresent(x-> System.out.println("nameContainer3 - ifPresent: "+x.toUpperCase()));
+        nameContainer3.ifPresentOrElse(
+                x-> System.out.println("nameContainer3 - ifPresentOrElse: "+x.toLowerCase()),
+                () -> System.out.println("nameContainer3 - ifPresentOrElse: ELSE PART")
+        );
+    }
+
+
+}
+O/P:
+Value is not available
+nameContainer2: Ramesh
+nameContainer2 - ifPresent: RAMESH
+nameContainer2 - ifPresentOrElse: ramesh
+nameContainer3 - ifPresentOrElse: ELSE PART
+-----------------------------------------------------------------------------------------------------------------
+
+
+package Java8._05Optional;
+
+import java.util.Optional;
+
+class Teacher {
+    int id;
+    String name;
+
+    public Teacher(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Teacher() {
+    }
+}
+
+public class Test04 {
+
+
+    public static Optional<String> getName(Teacher teacher){
+        if(teacher.name==null){
+            return Optional.empty();
+        }
+        return Optional.of(teacher.name);
+    }
+
+
+    public static void main(String[] args) {
+
+        Optional<String> nameContainer = getName(new Teacher());
+        Optional<String> nameContainer2 = getName(new Teacher(100, "Ramesh"));
+
+        String res = nameContainer.or( ()->Optional.of("Optional Name")).get();
+        System.out.println("nameContainer - Or: "+res);
+        res = nameContainer2.or( ()->Optional.of("Optional Name")).get();
+        System.out.println("nameContainer2 - Or: "+res);
+
+        res = nameContainer.orElse("XYZ");  //get() not needed
+        System.out.println("nameContainer - OrElse: "+res);
+        res = nameContainer2.orElse("XYZ");
+        System.out.println("nameContainer2 - OrElse: "+res);
+
+        res = nameContainer.orElseGet(()-> "Optional Name");  //get() not needed
+        System.out.println("nameContainer - orElseGet: "+res);
+        res = nameContainer2.orElseGet(()-> "Optional Name");
+        System.out.println("nameContainer2 - orElseGet: "+res);
+
+//        res = nameContainer.orElseThrow();
+//        System.out.println("nameContainer - orElseThrow: "+res);
+        res = nameContainer2.orElseThrow();
+        System.out.println("nameContainer2 - orElseThrow: "+res);
+    }
+}
+
+O/P:
+nameContainer - Or: Optional Name
+nameContainer2 - Or: Ramesh
+nameContainer - OrElse: XYZ
+nameContainer2 - OrElse: Ramesh
+nameContainer - orElseGet: Optional Name
+nameContainer2 - orElseGet: Ramesh
+nameContainer2 - orElseThrow: Ramesh
+-----------------------------------------------------------------
+https://youtu.be/kEEoKqdVc_4?t=20529

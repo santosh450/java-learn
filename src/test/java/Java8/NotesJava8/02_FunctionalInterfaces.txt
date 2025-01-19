@@ -1,0 +1,125 @@
+Functional Interfaces
+=====================
+	1. SAM - Single Abstract Method
+	2. Any no. of default methods
+	3. Any no. of static methods
+
+
+To implement SAM of FI lamda expressions are used
+
+
+
+
+package Java8._02FunctionalInterface;
+
+interface FI {
+    void display();
+}
+
+class dummy implements FI {
+    @Override
+    public void display() {
+        System.out.println("Display using implemented class");
+    }
+}
+
+public class Test01 {
+    public static void main(String[] args) {
+
+        //traditional approche
+        FI obj = new dummy();
+        obj.display();
+
+        // lambda expressions
+        FI obj2 = () -> {
+            System.out.println("obj2 Display using Lambda expressions");
+        };
+        obj2.display();
+
+        FI obj3 = () -> System.out.println("obj3 Display using Lambda expressions");
+        obj3.display();
+    }
+}
+
+O/P:
+Display using implemented class
+obj2 Display using Lambda expressions
+obj3 Display using Lambda expressions
+
+--------------------------------------------------------------------------------------------
+
+package Java8._02FunctionalInterface;
+
+interface OperationsFI {
+    double display(int x, int y);
+}
+
+
+public class Test02 {
+    public static void main(String[] args) {
+
+        // lambda expressions
+        OperationsFI add = (x,y) -> x+y;
+        OperationsFI minus = (x,y) -> x-y;
+        OperationsFI mul = (x,y) -> x*y;
+        OperationsFI div = (x,y) -> x/y;
+
+        System.out.println(add.display(10, 2));
+        System.out.println(minus.display(10, 2));
+        System.out.println(mul.display(10, 2));
+        System.out.println(div.display(10, 2));
+
+    }
+}
+
+O/P:
+12.0
+8.0
+20.0
+5.0
+
+====================================================================
+
+1. FI can be extends another interface (which has no abstract methods) and resultant Interface is still FI
+2. interface (which has no abstract methods) exteands FI and and resultant Interface is still FI
+
+Valid:
+// Example -1
+interface FI31 {
+}
+
+@FunctionalInterface
+interface FI32 extends FI31 {
+    double display1(int x, int y);
+}
+
+/*-----------------------------------------------------------*/
+// Example -2
+@FunctionalInterface
+interface FI33  {
+    double display2(int x, int y);
+}
+
+@FunctionalInterface
+interface FI34 extends FI33 {
+}
+
+/*-----------------------------------------------------------*/
+// Example -3
+
+@FunctionalInterface
+interface FI35  {
+    double none();
+}
+
+@FunctionalInterface
+interface FI36  extends FI35{
+    double none();
+}
+@FunctionalInterface
+interface FI37  extends FI36{
+    double none();
+}
+
+===================================================================================
+

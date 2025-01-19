@@ -1,0 +1,339 @@
+https://youtu.be/kEEoKqdVc_4?t=22606
+-------------------------------------
+
+
+
+Interface:
+==============
+	1. Any no of Abstract methods
+	2. Any no of Default methods
+	3. Any no of Static methods
+
+
+
+package Java8._01Interfaces;
+
+ interface Interfaces01 {
+    void printNames();
+    String getMarks();
+
+    default void defaultMethod01(){
+        System.out.println("Inside default 01");
+    }
+
+     default String defaultMethod02(){
+         System.out.println("Inside default 02");
+         return "defaultMethod02";
+     }
+}
+
+class TestInterface implements Interfaces01{
+
+    @Override
+    public void printNames() {
+        System.out.println("PrintNames in TestInterface");
+    }
+
+    @Override
+    public String getMarks() {
+        System.out.println("getMarks in TestInterface");
+        return "getMarks";
+    }
+}
+
+public class Test01 {
+    public static void main(String[] args) {
+        TestInterface TI = new TestInterface();
+        TI.printNames();
+        TI.getMarks();
+        TI.defaultMethod01();
+        TI.defaultMethod02();
+    }
+}
+
+O/P:
+PrintNames in TestInterface
+getMarks in TestInterface
+Inside default 01
+Inside default 02
+
+----------------------------------------------------
+
+Calling/accessing default methods in implemented Class
+
+
+package Java8._01Interfaces;
+
+ interface Interfaces02 {
+    void printNames();
+    String getMarks();
+
+    default void defaultMethod01(){
+        System.out.println("Inside default 01");
+    }
+
+     default String defaultMethod02(){
+         System.out.println("Inside default 02");
+         return "defaultMethod02";
+     }
+}
+
+class TestInterface2 implements Interfaces02{
+
+    @Override
+    public void printNames() {
+        System.out.println("PrintNames in TestInterface");
+        //Accessing default methods
+        defaultMethod01();
+    }
+
+    @Override
+    public String getMarks() {
+        System.out.println("getMarks in TestInterface");
+        //Accessing default methods
+        defaultMethod02();
+        return "getMarks";
+    }
+}
+public class Test02 {
+    public static void main(String[] args) {
+        TestInterface2 TI = new TestInterface2();
+        TI.printNames();
+        TI.getMarks();
+    }
+}
+
+
+
+PrintNames in TestInterface
+Inside default 01
+getMarks in TestInterface
+Inside default 02
+
+---------------------------------------------------------------------
+
+1. Want to add new method in inteface..then this method has to be implemented in all classes. With default method, we can add in interface and no need to implement in all classes
+2. If new logic is same for all classes then we can add default method to interface and then use in all classes
+3. Backward compatability - NO need to worry on implemented classes when you add default method to interface. No force to implement it.
+
+----------------------------------------------------------------------
+
+Override default methods
+
+
+package Java8._01Interfaces;
+
+ interface Interfaces03 {
+    void printNames();
+    String getMarks();
+
+    default void defaultMethod01(){
+        System.out.println("Inside default 01");
+    }
+
+     default String defaultMethod02(){
+         System.out.println("Inside default 02");
+         return "defaultMethod02";
+     }
+}
+
+class TestInterface3 implements Interfaces03{
+
+    @Override
+    public void printNames() {
+        System.out.println("PrintNames in TestInterface");
+    }
+
+    @Override
+    public String getMarks() {
+        System.out.println("getMarks in TestInterface");
+        return "getMarks";
+    }
+
+    @Override
+    public void defaultMethod01() {
+        System.out.println("Override defaultMethod01 in TestInterface3");
+    }
+}
+public class Test03 {
+    public static void main(String[] args) {
+        TestInterface3 TI = new TestInterface3();
+        TI.defaultMethod01();
+        TI.defaultMethod02();
+    }
+}
+
+
+O/P:
+Override defaultMethod01 in TestInterface3
+Inside default 02
+
+------------------------------------------------------------------------------
+
+Same default methods in 2 interfaces
+
+
+
+package Java8._01Interfaces;
+
+ interface Interfaces041 {
+
+    default void defaultMethodM1(){
+        System.out.println("Inside default 041-M1");
+    }
+
+     default void defaultMethodM2(){
+         System.out.println("Inside default 041-M2");
+     }
+}
+
+interface Interfaces042 {
+
+    default void defaultMethodM1(){
+        System.out.println("Inside default 042-M1");
+    }
+
+    default void defaultMethodM3(){
+        System.out.println("Inside default 042-M3");
+    }
+}
+
+class TestInterface4 implements Interfaces041, Interfaces042{
+
+     
+}
+public class Test04 {
+    public static void main(String[] args) {
+        TestInterface4 TI = new TestInterface4();
+
+    }
+}
+
+
+O/P:
+Duplicate defaiult methods in Interfaces041 and Interfaces042
+Interfaces041 and Interfaces042 are incompatible;
+TestInterface4 inherits unrelated defaults for defaultMethodM1() from types Interfaces041 and Interfaces042
+
+------------------------------------------------------
+
+Super keyword
+
+
+
+package Java8._01Interfaces;
+
+ interface Interfaces041 {
+
+    default void defaultMethodM1(){
+        System.out.println("Inside default 041-M1");
+    }
+
+     default void defaultMethodM2(){
+         System.out.println("Inside default 041-M2");
+     }
+}
+
+interface Interfaces042 {
+
+    default void defaultMethodM1(){
+        System.out.println("Inside default 042-M1");
+    }
+
+    default void defaultMethodM3(){
+        System.out.println("Inside default 042-M3");
+    }
+}
+
+class TestInterface4 implements Interfaces041, Interfaces042{
+
+
+    @Override
+    public void defaultMethodM1() {
+        Interfaces041.super.defaultMethodM1();
+        // Or Interfaces042.super.defaultMethodM1();
+        // Or Implement own logic
+    }
+}
+public class Test04 {
+    public static void main(String[] args) {
+        TestInterface4 TI = new TestInterface4();
+        TI.defaultMethodM1();
+        TI.defaultMethodM2();
+        TI.defaultMethodM3();
+    }
+}
+
+
+O/P:
+Inside default 041-M1
+Inside default 041-M2
+Inside default 042-M3
+
+
+------------------------------------------------------------
+
+-> Static methods are not part of objects. so always access with interfacename
+-> if any interfaces having same static method. There will not be any duplicate/ambiguity erros
+
+
+package Java8._01Interfaces;
+
+ interface Interfaces051 {
+
+    static void staticMethodM1(){
+        System.out.println("Inside static 051-M1");
+    }
+
+     static void staticMethodM2(){
+         System.out.println("Inside static 051-M2");
+     }
+}
+
+interface Interfaces052 {
+
+    static void staticMethodM1(){
+        System.out.println("Inside static 052-M1");
+    }
+
+    static   void staticMethodM3(){
+        System.out.println("Inside static 052-M3");
+    }
+}
+
+class TestInterface5 implements Interfaces051, Interfaces052{
+    void check(){
+        Interfaces051.staticMethodM1();
+        Interfaces051.staticMethodM2();
+        Interfaces052.staticMethodM1();
+        Interfaces052.staticMethodM3();
+        System.out.println();
+    }
+
+}
+public class Test05 {
+    public static void main(String[] args) {
+        TestInterface5 TI = new TestInterface5();
+        TI.check();
+        Interfaces051.staticMethodM1();
+        Interfaces051.staticMethodM2();
+        Interfaces052.staticMethodM1();
+        Interfaces052.staticMethodM3();
+    }
+}
+
+O/P:
+Inside static 051-M1
+Inside static 051-M2
+Inside static 052-M1
+Inside static 052-M3
+
+Inside static 051-M1
+Inside static 051-M2
+Inside static 052-M1
+Inside static 052-M3
+
+---------------------------------------------------------------------------------------------
+
+
+
