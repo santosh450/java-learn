@@ -1,0 +1,591 @@
+reference: https://www.youtube.com/watch?v=UypoeUL4T_U
+
+No Compilation error, But run time error
+
+package Generics;
+
+class Box{
+
+    private Object length;
+    public Object getLength() {
+        return length;
+    }
+
+    public void setLength(Object length) {
+        this.length = length;
+    }
+
+}
+public class Generics01 {
+    public static void main(String[] args) {
+        Box box = new Box();
+        box.setLength(10);
+        String len = (String) box.getLength();
+        System.out.println("Length: "+len );
+    }
+}
+
+O/P:
+java.lang.ClassCastException: class java.lang.Integer cannot be cast to class java.lang.String
+
+--------------------------------------------------------
+
+Java Convention:
+-> should be single letter
+for Class - 
+
+T: Type
+E: Element
+K: Key (used in maps)
+V: Value (used in maps)
+N: Number
+
+
+-----------------------------------------------------------------------------------------------------------------
+
+Generics in Class
+----------------
+
+package Generics;
+
+class Circe<T>{
+
+    private T length;
+    public T getLength() {
+        return length;
+    }
+
+    public void setLength(T length) {
+        this.length = length;
+    }
+
+}
+public class Generics02 {
+    public static void main(String[] args) {
+        Circe<Integer> circle = new Circe<>();
+        circle.setLength(10);
+        Integer length = circle.getLength();
+        System.out.println("Length1: "+length );
+
+        Circe<String> circle2 = new Circe<>();
+        circle2.setLength("Ten");
+        String length2 = circle2.getLength();
+        System.out.println("Length2: "+length2 );
+    }
+}
+
+O/P:
+Length1: 10
+Length2: Ten
+
+-----------------------------------------------------------
+
+package Generics;
+
+class Pair<K, V>{
+
+    private K key;
+    public V value;
+
+    public Pair(K key, V value) {
+        this.key = key;
+        this.value = value;
+    }
+
+    public K getKey() {
+        return key;
+    }
+
+    public V getValue() {
+        return value;
+    }
+}
+public class Generics03 {
+    public static void main(String[] args) {
+        Pair<Integer, String> pair1 = new Pair<>(10, "Ten");
+        System.out.println("Integer:String = "+pair1.getKey()+": "+pair1.getValue());
+
+        Pair<String, Integer> pair2 = new Pair<>("Five", 5);
+        System.out.println("String:Integer = "+pair2.getKey()+": "+pair2.getValue());
+    }
+}
+
+O/P:
+Integer:String = 10: Ten
+String:Integer = Five: 5
+
+---------------------------------------------------------------------------------------
+
+Generics in Interface
+---------------------
+
+package Generics;
+
+interface Container<T>{
+
+    void add(T item);
+    T get();
+}
+
+class Container1 implements Container<String> {
+
+    @Override
+    public void add(String item) {
+    }
+    @Override
+    public String get() {
+        return null;
+    }
+}
+
+class Container2 implements Container<Integer> {
+
+    @Override
+    public void add(Integer item) {
+    }
+    @Override
+    public Integer get() {
+        return null;
+    }
+}
+
+class Container3 implements Container<Integer> {
+
+    private Integer item;
+    @Override
+    public void add(Integer item) {
+        this.item=item;
+    }
+    @Override
+    public Integer get() {
+        return this.item;
+    }
+}
+
+// Generic type should be defined for implemented Class<T> if we mention for Interface<T>
+class GenericContainer<T> implements Container<T> {
+
+    private T item;
+    @Override
+    public void add(T item) {
+        this.item=item;
+    }
+    @Override
+    public T get() {
+        return item;
+    }
+}
+public class Generics04 {
+    public static void main(String[] args) {
+        
+    }
+}
+
+-------------------------------------------------------------------------------------------------------------
+Bounded Type Parameters
+------------------------
+
+
+package Generics;
+
+class Box05<N extends Number>{
+
+    private N length;
+    public N getLength() {
+        return length;
+    }
+
+    public void setLength(N length) {
+        this.length = length;
+    }
+
+}
+public class Generics05 {
+    public static void main(String[] args) {
+        //Valid
+        Box05<Integer> box1 = new Box05<>();
+        Box05<Float> box2 = new Box05<>();
+        Box05<Byte> box3 = new Box05<>();
+        Box05<Double> box4 = new Box05<>();
+
+        //Box05<String> box5 = new Box05<>();
+        //Type parameter 'java.lang.String' is not within its bound; should extend 'java.lang.Number'
+        
+    }
+}
+
+----------------------
+
+package Generics;
+
+interface Printable01{
+    void print();
+}
+
+class MyNumber01 implements Printable01
+{
+    private final int value;
+
+    MyNumber01(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public void print() {
+        System.out.println("MyNumber: "+value);
+    }
+
+
+    public void printOwn() {
+        System.out.println("MyNumber Own : "+value);
+    }
+
+
+
+}
+
+// Boundary with Interface and its methods
+class Box07<T extends Printable01> {
+    private T item;
+
+    public Box07(T item){
+        this.item=item;
+    }
+
+    public void display01(){
+        item.print();
+    }
+
+    public void display02(){
+        //item.printOwn();
+        //You Cant access PrintOwn method
+    }
+
+}
+
+// Boundary with Class and its own methods, implemented methods
+class Box08<T extends MyNumber01> {
+    private T item;
+
+    public Box08(T item){
+        this.item=item;
+    }
+
+    public void display03(){
+        item.print();
+    }
+
+    public void display04(){
+        item.printOwn();
+        //You Can access both Interface and class  methods
+    }
+
+}
+
+public class Generics06 {
+    public static void main(String[] args) {
+        MyNumber01 myNum = new MyNumber01(13);
+        Box07<MyNumber01> box = new Box07<>(myNum);
+        box.display01();
+
+        MyNumber01 myNum2 = new MyNumber01(14);
+        Box08<MyNumber01> box2 = new Box08<>(myNum2);
+        box2.display03();
+        box2.display04();
+
+    }
+}
+
+O/P:
+MyNumber: 13
+MyNumber: 14
+MyNumber Own : 14
+
+--------------------------------------------------
+
+package Generics;
+
+interface Printable{
+    void print();
+}
+
+class MyNumber extends Number implements Printable
+{
+    private final int value;
+
+    MyNumber(int value) {
+        this.value = value;
+    }
+
+    @Override
+    public void print() {
+        System.out.println("MyNumber: "+value);
+    }
+
+    @Override
+    public int intValue() {
+        return value;
+    }
+
+    @Override
+    public long longValue() {
+        return value;
+    }
+
+    @Override
+    public float floatValue() {
+        return value;
+    }
+
+    @Override
+    public double doubleValue() {
+        return value ;
+    }
+
+
+}
+
+class Box06<T extends Number & Printable> {
+    private T item;
+
+    public Box06(T item){
+        this.item=item;
+    }
+
+    public void display(){
+        item.print();
+    }
+
+}
+
+public class Generics07 {
+    public static void main(String[] args) {
+        MyNumber myNum = new MyNumber(12);
+        Box06<MyNumber> box = new Box06<>(myNum);
+        box.display();
+
+    }
+}
+
+O/P:
+MyNumber: 12
+
+==========================================================================================
+
+
+
+Generics in Constructor
+-----------------------
+package Generics;
+
+class Box09 {
+
+    //private T value;
+    //Cannot resolve symbol 'T'
+    public <T> Box09(T value){
+        System.out.println("Value in Box09: "+value);
+    }
+}
+
+class Box10 {
+
+    public <T extends Number> Box10(T value){
+        System.out.println("Value in Box10: "+value);
+    }
+}
+public class Generics08_Constructor {
+
+    public static void main(String[] args) {
+        
+        Box09 box9 = new Box09(10);
+        box9 = new Box09("Ten");
+        Box10 box10 = new Box10(11);
+        box10 = new Box10(11.00);
+
+    }
+}
+O/P:
+Value in Box09: 10
+Value in Box09: Ten
+Value in Box10: 11
+Value in Box10: 11.0
+
+-----------------------------
+Generics Methods
+----------------
+
+package Generics;
+public class Generics09_Methods {
+
+    public <T> void printArray(T[] array){
+        for (T ele: array) {
+            System.out.print(" Element: "+ele);
+        }
+        System.out.println();
+    }
+
+    public <T> void display (T element){
+        System.out.println("Generic display: "+element);
+    }
+
+    public void display (Integer element){
+        System.out.println("Integer display: "+element);
+    }
+
+    public static void main(String[] args) {
+
+        Integer[] intArray = {1,2,3};
+        String[] strArray = {"Hello", "Tata"};
+        Generics09_Methods g09 = new Generics09_Methods();
+        g09.printArray(strArray);
+        g09.printArray(intArray);
+
+        g09.display(10);
+        g09.display(10.0);
+
+
+    }
+}
+
+O/P:
+
+ Element: Hello Element: Tata
+ Element: 1 Element: 2 Element: 3
+Integer display: 10
+Generic display: 10.0
+
+----------------------------------------------------------------------------
+Generics in ENUM
+-----------------
+
+package Generics;
+
+
+enum Operation {
+    ADD, MULTIPLY, SUBTRACT, DIVIDE;
+
+    public <T extends Number> double apply (T a, T b){
+        switch (this){
+            case ADD:
+                return a.doubleValue()+b.doubleValue();
+            case SUBTRACT:
+                return a.doubleValue()-b.doubleValue();
+            case DIVIDE:
+                return a.doubleValue()/b.doubleValue();
+            case MULTIPLY:
+                return a.doubleValue()*b.doubleValue();
+             default:
+                throw new AssertionError("Unknown operation "+this);
+        }
+    }
+}
+public class Generics10_ENUM {
+
+    public static void main(String[] args) {
+        double add = Operation.ADD.apply(10, 20);
+        System.out.println("Add: "+add);
+        double mul = Operation.MULTIPLY.apply(10, 20);
+        System.out.println("Mul: "+mul);
+    }
+}
+
+
+O/P:
+Add: 30.0
+Mul: 200.0
+
+==============================================================
+
+WildChars
+--------------
+
+package Generics;
+
+import java.util.Arrays;
+import java.util.List;
+
+public class Generics11_Wild {
+
+    public static void main(String[] args) {
+        List<? super Number> nums = Arrays.asList(1, 2, 3);
+        nums.add(10);
+
+        List<? extends Number> num2 = Arrays.asList(1, 2, 3);
+        //num2.add(10);
+        //Error
+    }
+
+    public double sum1(List<? extends Number> nums){
+        double sum = 0;
+        for (Number n:nums) {
+            sum +=n.doubleValue();
+        }
+        return sum;
+    }
+}
+
+--------------------------------------------------------------------
+
+Generic Eraser
+: During compile time generics will replace with specific type (byte code)
+
+------------------------------------------------------------------------------
+
+Generic Exception:
+
+Java does not support generic exceptions due to type 
+erasure. Type erasure means that generic type information 
+is removed at runtime. Since exceptions are closely tied to 
+runtime operations (like catching them in try-catch blocks), 
+having generic exceptions wouldn't work as expected. For 
+example, if you had an exception like 
+MyGenericException<T>, you wouldn't be able to catch it 
+with a specific type parameter because that type 
+information would be erased at runtime. 
+
+
+
+package Generics;
+
+import java.util.Arrays;
+import java.util.List;
+
+//Not supported
+//class MyException<T> extends Exception {
+
+//Alternate way to achieve this
+class MyException extends Exception {
+    public <T> MyException(T value){
+        super("Exception value: "+value.toString()
+                +" of type: "+value.getClass().getName());
+    }
+}
+
+public class Generics12_Exception {
+
+    public static void main(String[] args) {
+        try{
+            throw new MyException(100);
+        }catch (MyException e){
+            System.out.println("Caught Exception: "+e.getMessage());
+        }
+        try{
+            throw new MyException("Two");
+        }catch (MyException e){
+            System.out.println("Caught Exception: "+e.getMessage());
+        }
+    }
+
+}
+
+
+O/P:
+Caught Exception: Exception value: 100 of type: java.lang.Integer
+Caught Exception: Exception value: Two of type: java.lang.String
+
+
+
+
+
+
+
