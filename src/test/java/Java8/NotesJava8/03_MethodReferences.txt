@@ -254,6 +254,58 @@ Constructor Reference: 11
 
 --------------------------------------------------------------------------------------------------------
 
+1. Traditional way
+
+class Printer {
+    public void printOdd() {
+        System.out.println("Printing odd numbers...");
+    }
+}
+
+class OddTask implements Runnable {
+    private Printer printer;
+    public OddTask(Printer printer) {
+        this.printer = printer;
+    }
+
+    @Override
+    public void run() {
+        printer.printOdd();
+    }
+}
+
+public class Main {
+
+    public static void main(String[] args) {
+
+        Printer printer = new Printer();
+        Runnable task = new OddTask(printer);
+        Thread oddThread =
+                new Thread(task, "Odd-Thread");
+        oddThread.start();
+    }
+}
+
+2. Anonymous Runnable class
+
+Printer printer = new Printer();
+Thread oddThread = new Thread(
+        new Runnable() {
+            @Override
+            public void run() {
+                printer.printOdd();
+            }
+        }, "Odd-Thread" );
+
+
+3. Lambda expression
+
+Printer printer = new Printer();
+Thread oddThread = new Thread(() -> printer.printOdd(), "Odd-Thread");
+
+4. Method reference
+If your lambda only calls one existing method:
+Thread oddThread = new Thread(printer::printOdd, "Odd-Thread");
 
 
 

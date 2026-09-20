@@ -1,0 +1,68 @@
+public record User(
+        int id,
+        String name,
+        String email
+) {}
+
+initially translate it in your head to approximately:
+
+public final class User extends Record {
+
+    private final int id;
+    private final String name;
+    private final String email;
+
+    public User(
+            int id,
+            String name,
+            String email) {
+
+        this.id = id;
+        this.name = name;
+        this.email = email;
+    }
+
+    public int id() {
+        return id;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public String email() {
+        return email;
+    }
+
+    // Java also provides:
+    // equals()
+    // hashCode()
+    // toString()
+}
+
+A record:
+
+Is implicitly final.
+Cannot extend another class.
+Implicitly extends java.lang.Record.
+Can implement interfaces.
+Cannot declare extra instance fields.
+Can declare static fields.
+Can have methods.
+Can have constructors.
+Automatically provides component accessors.
+Automatically provides equals(), hashCode(), and toString().
+Has final component fields, but referenced objects may still be mutable.
+
+
+Database
+   ↓
+JPA Entity
+   ↓
+Service
+   ↓
+DTO Record
+   ↓
+Controller
+   ↓
+JSON

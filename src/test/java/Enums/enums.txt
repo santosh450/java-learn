@@ -1,0 +1,118 @@
+public enum Day {
+    SUNDAY, MONDAY, TUESDAY, WEDNESDAY,
+    THURSDAY, FRIDAY, SATURDAY
+}
+
+is roughly equivalent to:
+
+public final class Day {
+
+    public static final Day SUNDAY    = new Day("SUNDAY", 0);
+    public static final Day MONDAY    = new Day("MONDAY", 1);
+    public static final Day TUESDAY   = new Day("TUESDAY", 2);
+    public static final Day WEDNESDAY = new Day("WEDNESDAY", 3);
+    public static final Day THURSDAY  = new Day("THURSDAY", 4);
+    public static final Day FRIDAY    = new Day("FRIDAY", 5);
+    public static final Day SATURDAY  = new Day("SATURDAY", 6);
+
+    private final String name;
+    private final int ordinal;
+
+    // Constructor is private
+    private Day(String name, int ordinal) {
+        this.name = name;
+        this.ordinal = ordinal;
+    }
+
+    public String name() {
+        return name;
+    }
+
+    public int ordinal() {
+        return ordinal;
+    }
+
+    public static Day[] values() {
+        return new Day[] {
+            SUNDAY,
+            MONDAY,
+            TUESDAY,
+            WEDNESDAY,
+            THURSDAY,
+            FRIDAY,
+            SATURDAY
+        };
+    }
+}
+
+-----
+package Enums;
+
+public class TestEnum {
+
+    public static void main(String[] args) {
+        System.out.println("Enum: "+Day.MONDAY);
+        System.out.println("name as String: "+Day.MONDAY.name().toLowerCase());
+        System.out.println("ordinal as int: "+Day.MONDAY.ordinal());
+        System.out.println("Enum: "+Day.valueOf("MONDAY"));
+        for(Day day: Day.values()){
+            System.out.print(day.name()+" ");
+        }
+    }
+}
+
+
+Enum: MONDAY
+name as String: monday
+ordinal as int: 1
+Enum: MONDAY
+SUNDAY MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY
+
+ ------------------
+
+ package Enums;
+
+ public enum Day {
+
+     SUNDAY("SunDay"), MONDAY("MonDay"), TUESDAY("TuesDay"),
+     WEDNESDAY("WednesDay"), THURSDAY("ThursDay"), FRIDAY("FriDay"),
+     SATURDAY("SaturDay");
+
+     private String lower;
+
+     private Day(String lower){
+         System.out.println("Our constructor called.");
+         this.lower = lower;
+     }
+
+     public void display(){
+         System.out.println("Today is "+this.name());
+     }
+ }
+
+
+package Enums;
+
+public class TestEnum {
+
+    public static void main(String[] args) {
+        System.out.println("Enum: "+Day.MONDAY);
+        Day.MONDAY.display();
+
+    }
+}
+
+/*
+Our constructor called.
+Our constructor called.
+Our constructor called.
+Our constructor called.
+Our constructor called.
+Our constructor called.
+Our constructor called.
+Enum: MONDAY
+Today is MONDAY
+ */
+
+
+
